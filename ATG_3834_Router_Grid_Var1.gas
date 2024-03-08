@@ -1,0 +1,526 @@
+Program.Sub.ScreenSU.Start
+gui.RouterFlex..create
+gui.RouterFlex..caption("Configure Router Wizard")
+gui.RouterFlex..size(10845,6375)
+gui.RouterFlex..position(0,0)
+gui.RouterFlex..event(resize,routerflex_resize)
+gui.RouterFlex..event(unload,routerflex_unload)
+gui.RouterFlex..alwaysontop(False)
+gui.RouterFlex..fontname("Arial")
+gui.RouterFlex..fontsize(8)
+gui.RouterFlex..forecolor(0)
+gui.RouterFlex..fontstyle(,,,,)
+gui.RouterFlex..BackColor(-2147483633)
+gui.RouterFlex..controlbox(True)
+gui.RouterFlex..maxbutton(True)
+gui.RouterFlex..minbutton(True)
+gui.RouterFlex..mousepointer(0)
+gui.RouterFlex..moveable(True)
+gui.RouterFlex..sizeable(True)
+gui.RouterFlex..ShowInTaskBar(True)
+gui.RouterFlex..titlebar(True)
+gui.RouterFlex.frame1.create(frame)
+gui.RouterFlex.frame1.caption("")
+gui.RouterFlex.frame1.size(10470,795)
+gui.RouterFlex.frame1.position(100,0)
+gui.RouterFlex.frame1.visible(True)
+gui.RouterFlex.frame1.fontname("Arial")
+gui.RouterFlex.frame1.fontsize(8)
+gui.RouterFlex.txtRouter.create(textbox,"",True,1560,300,0,100,300,False,0,Arial,8,-2147483643,1)
+gui.RouterFlex.txtRouter.parent("frame1")
+gui.RouterFlex.txtRouter.maxLength(20)
+gui.RouterFlex.cmdBrowse.create(button)
+gui.RouterFlex.cmdBrowse.caption("^")
+gui.RouterFlex.cmdBrowse.visible(True)
+gui.RouterFlex.cmdBrowse.size(315,270)
+gui.RouterFlex.cmdBrowse.zorder(0)
+gui.RouterFlex.cmdBrowse.position(1745,315)
+gui.RouterFlex.cmdBrowse.enabled(True)
+gui.RouterFlex.cmdBrowse.parent("frame1")
+gui.RouterFlex.cmdBrowse.fontname("Arial")
+gui.RouterFlex.cmdBrowse.fontsize(8)
+gui.RouterFlex.cmdBrowse.event(click,cmdbrowse_click)
+gui.RouterFlex.lbl2.create(label,"Router",True,1935,255,1,140,110,True,0,Arial,8,-2147483633,0)
+gui.RouterFlex.lbl2.parent("frame1")
+gui.RouterFlex.cmdExport.create(button)
+gui.RouterFlex.cmdExport.caption("Save")
+gui.RouterFlex.cmdExport.visible(True)
+gui.RouterFlex.cmdExport.size(855,375)
+gui.RouterFlex.cmdExport.zorder(0)
+gui.RouterFlex.cmdExport.position(9465,245)
+gui.RouterFlex.cmdExport.enabled(True)
+gui.RouterFlex.cmdExport.parent("frame1")
+gui.RouterFlex.cmdExport.fontname("Arial")
+gui.RouterFlex.cmdExport.fontsize(8)
+gui.RouterFlex.cmdExport.event(click,cmdexport_click)
+gui.RouterFlex.gsRouter.create(gsflexgrid)
+gui.RouterFlex.gsRouter.FixedRows(0)
+gui.RouterFlex.gsRouter.FixedCols(0)
+gui.RouterFlex.gsRouter.visible(True)
+gui.RouterFlex.gsRouter.size(10455,4875)
+gui.RouterFlex.gsRouter.zorder(0)
+gui.RouterFlex.gsRouter.position(135,845)
+gui.RouterFlex.gsRouter.enabled(True)
+gui.RouterFlex.gsRouter.event(gotfocus,gsrouter_gotfocus)
+gui.RouterFlex.gsRouter.event(lostfocus,gsrouter_lostfocus)
+gui.RouterFlex.gsRouter.event(cellenter,gsrouter_cellenter)
+gui.RouterFlex.gsRouter.event(cellexit,gsrouter_listexit)
+gui.RouterFlex.gsRouter.event(commandclick,gsrouter_commandclick)
+gui.RouterFlex.lbl3.create(label,"Loading...",True,3435,555,1,3600,2700,True,0,Arial,24,-2147483633,0)
+gui.RouterFlex.lblSave.create(label,"",True,4965,255,1,2500,315,True,0,Arial,8,-2147483633,0)
+gui.RouterFlex.lblSave.parent("frame1")
+gui.RouterFlex.cmdCopy.create(button)
+gui.RouterFlex.cmdCopy.caption("Copy")
+gui.RouterFlex.cmdCopy.visible(True)
+gui.RouterFlex.cmdCopy.size(855,375)
+gui.RouterFlex.cmdCopy.zorder(0)
+gui.RouterFlex.cmdCopy.position(8445,245)
+gui.RouterFlex.cmdCopy.enabled(True)
+gui.RouterFlex.cmdCopy.parent("frame1")
+gui.RouterFlex.cmdCopy.fontname("Arial")
+gui.RouterFlex.cmdCopy.fontsize(8)
+gui.RouterFlex.cmdCopy.event(click,cmdcopy_click)
+gui.RouterFlex.cmdBrowse.tabstop(True)
+gui.RouterFlex.cmdBrowse.tabindex(1)
+gui.RouterFlex.cmdCopy.tabstop(True)
+gui.RouterFlex.cmdCopy.tabindex(2)
+gui.RouterFlex.cmdExport.tabstop(True)
+gui.RouterFlex.cmdExport.tabindex(3)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'Router Configurator
+'Hooks 11010 and 11120 and 11150
+V.Global.sRouter.Declare(String)
+V.Global.Dirty.Declare(Long)
+V.Local.sRev.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.bExt.Declare(Boolean)
+
+F.Intrinsic.Control.If(V.Caller.Hook,=,"11010")
+	V.Passed.000201.Set("Configure")
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Caller.Hook,=,"11150")
+	F.Intrinsic.String.Concat(V.Caller.TempDir,"\ATGROUTERCOPY",V.Caller.Terminal,".TXT",V.Local.sFile)
+	F.Intrinsic.File.Exists(V.Local.sFile,V.Local.bExt)
+	F.Intrinsic.Control.If(V.Local.bExt,=,False)
+		F.Intrinsic.Control.End
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.File.File2String(V.Local.sFile,V.Global.sRouter)
+	F.Intrinsic.String.Replace(V.Global.sRouter,V.Ambient.NewLine,"",V.Global.sRouter)
+	F.Intrinsic.File.String2File(V.Local.sFile,"")
+	F.Intrinsic.String.mid(V.Global.sRouter,18,3,V.Local.sRev)
+	F.Intrinsic.String.LEFT(V.Global.sRouter,17,V.Global.sRouter)
+	F.Intrinsic.Control.If(V.Global.sRouter.Trim,<>,"")
+		V.Passed.000003.Set(V.Global.sRouter.Trim)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.If(V.Local.sRev.Trim,<>,"")
+		V.Passed.000004.Set(V.Local.sRev.Trim)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+
+
+F.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+V.Global.sRouter.Set(V.Passed.000014)
+F.Intrinsic.String.RPad(V.Global.sRouter," ",17,V.Global.sRouter)
+F.Intrinsic.String.RPad(V.Passed.000015," ",3,V.Local.sRev)
+F.Intrinsic.String.Concat(V.Global.sRouter,V.Local.sRev,V.Global.sRouter)
+
+
+F.ODBC.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+Gui.RouterFlex.txtRouter.Text(V.Global.sRouter)
+Gui.RouterFlex..Show
+
+Gui.RouterFlex..AlwaysOnTop(true)
+F.Intrinsic.Control.CallSub(Loadflex)
+
+
+
+
+
+Program.Sub.Main.End
+
+program.sub.cmdexport_click.start
+V.Local.rows.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.ix.Declare(Long)
+V.Local.sSeq.Declare(String)
+V.Local.sCell.Declare(String)
+V.Local.sType.Declare(String)
+V.Local.iUbound.Declare(Long)
+V.Local.sPart.Declare(String)
+V.Local.sDesc.Declare(String)
+V.Local.sSetup.Declare(String)
+V.Local.sRuntime.Declare(String)
+V.Local.sUM.Declare(String)
+V.Local.sRate.Declare(String)
+
+F.Intrinsic.Control.If(V.Global.sRouter.Trim,<>,"")
+	Gui.RouterFlex.gsRouter.Commit
+	Gui.RouterFlex..Enabled(false)
+	Gui.RouterFlex.gsRouter.Visible(false)
+
+	F.Intrinsic.Math.Sub(V.Screen.RouterFlex!gsrouter.Rows,1,V.Local.iUbound)
+	F.Intrinsic.Control.For(V.Local.ix,1,V.Local.iUbound,1)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(0,V.Local.ix,V.Local.sSeq)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(1,V.Local.ix,V.Local.sType)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(2,V.Local.ix,V.Local.sPart)
+		F.Intrinsic.String.Replace(V.Local.sPart,"'","''",V.Local.sPart)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(4,V.Local.ix,V.Local.sDesc)
+		F.Intrinsic.String.Replace(V.Local.sDesc,"'","''",V.Local.sDesc)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(5,V.Local.ix,V.Local.sSetup)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(6,V.Local.ix,V.Local.sRuntime)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(7,V.Local.ix,V.Local.sUM)
+		Gui.RouterFlex.gsRouter.GetTextMatrix(8,V.Local.ix,V.Local.sRate)
+
+		F.Intrinsic.String.Concat("UPDATE ROUTER_LINE SET PART_WC_OUTSIDE='",V.Local.sPart,"' , DESC_RT_LINE='",V.Local.sDesc,"' , SET_UP='",V.Local.sSetup,"' , RUN_TIME='",V.Local.sRuntime,"' ,UM_INVENTORY='",V.LOCAL.sUM,"',RATE='",V.LOCAL.SRATE,"', LMO='",V.Local.stype,"'  WHERE ROUTER='",V.Global.sRouter.Trim,"' AND LINE_ROUTER='",V.Local.sseq,"' AND ROUTER_TYPE='L' ",V.LOCAL.SSQL)
+		F.ODBC.Connection!conx.Execute(V.Local.sSQL)
+
+	F.Intrinsic.Control.Next(V.Local.ix)
+	Gui.RouterFlex.lblSave.Caption("Router saved.")
+	Gui.RouterFlex..Enabled(true)
+	Gui.RouterFlex.gsRouter.Visible(true)
+F.Intrinsic.Control.EndIf
+
+program.sub.cmdexport_click.end
+
+program.sub.routerflex_unload.start
+V.Local.return.Declare(Long)
+
+
+F.Intrinsic.Control.If(V.Screen.RouterFlex!lblSave.Caption,=,"Router not saved.")
+
+	F.Intrinsic.UI.Msgbox("You have not saved.  Are you sure you want to exit?","Router not saved.",4,V.Local.return)
+
+	F.Intrinsic.Control.If(V.Local.return,=,7)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+program.sub.routerflex_unload.end
+
+program.sub.routerflex_resize.start
+V.Local.width.Declare(Long)
+V.Local.height.Declare(Long)
+
+V.Local.width.Set(V.Screen.routerFlex.Width)
+V.Local.height.Set(V.Screen.routerFlex.Height)
+
+F.Intrinsic.Math.Sub(V.Local.width,500,V.Local.width)
+F.Intrinsic.Math.Sub(V.Local.height,1500,V.Local.height)
+
+F.Intrinsic.Control.If(V.Local.width,<,10455)
+	V.Local.width.Set(10455)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Local.HEIGHT,<,4575)
+	V.Local.HEIGHT.Set(4575)
+F.Intrinsic.Control.EndIf
+Gui.routerFlex.gsrouter.Size(V.Local.width,V.Local.height)
+
+
+
+
+
+
+program.sub.routerflex_resize.end
+
+program.sub.cmdbrowse_click.start
+V.Local.sSQL.Declare(String)
+'String array to hold Column Widths
+V.Local.widths.Declare(String)
+'String array to hold Column Titles
+V.Local.titles.Declare(String)
+'Selection result array String
+V.Local.results.Declare(String)
+V.Local.temp.Declare(String)
+V.Local.cancel.Declare(String)
+V.Local.ftemp.Declare(Float)
+V.Local.fCost.Declare(Float)
+V.Local.fCostPer.Declare(Float)
+V.Local.sPL.Declare(String)
+V.Local.rows.Declare(Long)
+V.Local.bin.Declare(String)
+
+'Store Browser Column titles into titles array
+F.Intrinsic.String.Split("ROUTER*!*DESCRIPTION","*!*",V.Local.titles)
+'Store Browser Column widths into array
+F.Intrinsic.String.Split("2000*!*3000","*!*",V.Local.widths)
+
+'Execute GAB Browser
+F.Intrinsic.UI.Browser("Select Router","conx","Select ROUTER, DESCRIPTION_ROUTER from V_ROUTER_HEADER ORDER BY ROUTER ",V.Local.titles,V.Local.widths,200,7000,V.Local.results)
+'Split result string into array
+F.Intrinsic.String.Split(V.Local.results,"*!*",V.Local.results)
+'Return Part number to input into inventory maintenance screen.
+
+'If not canceled then enter part and rev
+F.Intrinsic.String.Instr(V.Local.results,"***CANCEL***",1,V.Local.cancel)
+F.Intrinsic.Control.If(V.Local.cancel,=,0)
+	Gui.RouterFlex.txtRouter.Text(V.Local.results(0))
+	V.Global.sRouter.Set(V.Local.results(0))
+	F.Intrinsic.Control.CallSub(Loadflex)
+F.Intrinsic.Control.EndIf
+
+program.sub.cmdbrowse_click.end
+
+Program.Sub.LoadFlex.Start
+V.Local.rows.Declare(Long)
+V.Local.sSQL.Declare(String)
+
+
+F.Intrinsic.Control.If(V.Global.sRouter.Trim,<>,"")
+	Gui.RouterFlex..Enabled(false)
+	Gui.RouterFlex.gsRouter.Visible(false)
+
+
+
+'Build Flex gid
+
+	F.Intrinsic.String.Concat("select LINE_ROUTER,LMO,PART_WC_OUTSIDE,'<' AS P,DESC_RT_LINE,SET_UP,RUN_TIME,UM_INVENTORY,RATE from ROUTER_LINE where ROUTER_TYPE='L' AND (LMO='M' OR LMO='L' OR LMO='O') AND ROUTER='",V.Global.sRouter,"' ORDER BY LINE_ROUTER",V.Local.sSQL)
+	F.ODBC.Connection!conx.OpenRecordsetRO("rstROUTER",V.Local.sSQL)
+
+
+	Gui.RouterFlex.gsRouter.cOLs(9)
+	Gui.RouterFlex.gsRouter.Rows(1)
+	Gui.RouterFlex.gsRouter.Rows(2)
+
+
+
+	Gui.RouterFlex.gsRouter.BuildStyle(1,0,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,1,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,2,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,3,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,4,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,5,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,6,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.BuildStyle(1,7,"fontstyle","bold",True)
+	Gui.RouterFlex.gsRouter.SetProperty("Enter",1)
+
+
+	Gui.RouterFlex.gsRouter.ApplyStyle(0,1)
+
+
+
+	Gui.RouterFlex.gsRouter.BuildStyle(2,0,"type","locked",True)
+	'Gui.RouterFlex.gsRouter.BuildStyle(2,1,"type","locked",True)
+
+	Gui.RouterFlex.gsRouter.TextMatrix(0,0,"Seq.")
+	Gui.RouterFlex.gsRouter.ColWidth(0,700)
+	Gui.RouterFlex.gsRouter.TextMatrix(1,0,"Type")
+	Gui.RouterFlex.gsRouter.BuildStyle(2,1,"Format","alignment",2)
+	Gui.RouterFlex.gsRouter.BuildStyle(2,1,"Format","maxlength",1)
+	Gui.RouterFlex.gsRouter.ColWidth(1,600)
+	Gui.RouterFlex.gsRouter.TextMatrix(2,0,"Workcenter/Part")
+	Gui.RouterFlex.gsRouter.BuildStyle(2,2,"Format","alignment",2)
+	Gui.RouterFlex.gsRouter.BuildStyle(2,2,"Format","maxlength",20)
+	Gui.RouterFlex.gsRouter.ColWidth(2,1900)
+	Gui.RouterFlex.gsRouter.TextMatrix(3,0,"")
+	Gui.RouterFlex.gsRouter.ColWidth(3,200)
+	Gui.RouterFlex.gsRouter.BuildStyle(2,3,"type","command","<")
+	Gui.RouterFlex.gsRouter.TextMatrix(4,0,"Description")
+	Gui.RouterFlex.gsRouter.BuildStyle(2,4,"Format","alignment",2)
+	Gui.RouterFlex.gsRouter.BuildStyle(2,4,"Format","maxlength",30)
+	Gui.RouterFlex.gsRouter.ColWidth(4,3000)
+	Gui.RouterFlex.gsRouter.TextMatrix(5,0,"Setup")
+	Gui.RouterFlex.gsRouter.ColWidth(5,800)
+	Gui.RouterFlex.gsRouter.TextMatrix(6,0,"Runtime/Quantity")
+	Gui.RouterFlex.gsRouter.ColWidth(6,1500)
+	Gui.RouterFlex.gsRouter.TextMatrix(7,0,"UM")
+	Gui.RouterFlex.gsRouter.BuildStyle(2,7,"Format","maxlength",2)
+	Gui.RouterFlex.gsRouter.ColWidth(7,650)
+	Gui.RouterFlex.gsRouter.TextMatrix(8,0,"Rate")
+	Gui.RouterFlex.gsRouter.ColWidth(8,800)
+
+	Gui.RouterFlex.gsRouter.Rows(2)
+
+
+	Gui.RouterFlex.gsRouter.FixedRows(1)
+
+	Gui.RouterFlex.gsRouter.LoadRecordset("conx!rstROUTER",2)
+
+	F.Intrinsic.Math.Sub(V.Screen.RouterFlex!gsRouter.Rows,1,V.Local.rows)
+	Gui.RouterFlex.gsRouter.Rows(V.Local.rows)
+
+	F.ODBC.conx!rstROUTER.Close
+
+
+
+
+
+	Gui.RouterFlex..Enabled(true)
+	Gui.RouterFlex.gsRouter.Visible(true)
+F.Intrinsic.Control.EndIf
+
+Program.Sub.LoadFlex.End
+
+program.sub.gsrouter_listexit.start
+Gui.RouterFlex.cmdBrowse.TabStop(true)
+Gui.RouterFlex.cmdCopy.TabStop(true)
+Gui.RouterFlex.cmdExport.TabStop(true)
+Gui.RouterFlex.lblSave.Caption("Router not saved.")
+
+program.sub.gsrouter_listexit.end
+
+program.sub.cmdcopy_click.start
+V.Local.sCommand.Declare(String)
+V.Local.sUser.Declare(String)
+V.Local.sFile.Declare(String)
+Gui.RouterFlex..AlwaysOnTop(false)
+F.Intrinsic.API.SendMessageL(V.Passed.000035.HWnd,245,0,0)
+F.Intrinsic.String.Concat(V.Caller.TempDir,"\ATGROUTERCOPY",V.Caller.Terminal,".TXT",V.Local.sFile)
+F.Intrinsic.File.String2File(V.Local.sFile,V.Global.sRouter)
+F.Intrinsic.String.RPad(V.Caller.User," ",8,V.Local.sUser)
+F.Intrinsic.String.Concat(V.Caller.CompanyCode," ",V.Local.sUser," ","1SHOTGI ",V.Caller.CompanyCode," RE0010/C",V.Local.sCommand)
+
+F.Intrinsic.Task.LaunchGSSSync("SYS050","-C",V.Local.sCommand)
+
+Gui.RouterFlex..AlwaysOnTop(true)
+
+program.sub.cmdcopy_click.end
+
+program.sub.gsrouter_commandclick.start
+'test
+'test
+
+V.Local.sLMO.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sCol.Declare(String)
+V.Local.sWidth.Declare(String)
+V.Local.sFormat.Declare(String)
+
+V.Local.sret.Declare(String)
+V.Local.squery.Declare(String)
+
+
+
+	F.Intrinsic.Control.BlockEvents
+
+F.Intrinsic.Control.If(V.Global.Dirty,=,1)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+V.Global.Dirty.Set(1)
+Gui.RouterFlex..Enabled(false)
+'	Gui.RouterFlex.gsRouter.ColWidth(3,0)
+
+Gui.RouterFlex.gsRouter.GetTextMatrix(1,V.Args.key,V.Local.sLMO)
+
+
+
+F.Intrinsic.Control.If(V.Local.sLMO,=,"M")
+	F.Intrinsic.String.Split("PART*!*DESCRIPTION*!*COST","*!*",V.Local.sCol)
+	F.Intrinsic.String.Split("2000*!*4000*!*1000","*!*",V.Local.swidth)
+
+	V.Local.squery.Set("SELECT PART,DESCRIPTION,AMT_COST FROM V_INVENTORY_MSTR ORDER BY PART")
+	F.Intrinsic.UI.Browser("Select Part","conx",V.Local.squery,V.Local.sCol,V.Local.sWidth,400,400,V.Local.sRet)
+
+		F.Intrinsic.Control.If(V.Local.sret,<>,"***CANCEL***")
+			F.Intrinsic.string.Split(V.Local.sret,"*!*",V.Local.sret)
+			Gui.RouterFlex.gsRouter.TextMatrix(2,V.Args.key,V.Local.sret(0))
+			Gui.RouterFlex.gsRouter.TextMatrix(4,V.Args.key,V.Local.sret(1))
+			Gui.RouterFlex.gsRouter.TextMatrix(8,V.Args.key,V.Local.sRet(2))
+			Gui.RouterFlex.lblSave.Caption("Router not saved.")
+		F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.If(V.Local.sLMO,=,"L")
+	F.Intrinsic.String.Split("MACHINE*!*DESCRIPTION","*!*",V.Local.sCol)
+	F.Intrinsic.String.Split("2000*!*4000*!*1000","*!*",V.Local.swidth)
+
+	V.Local.squery.Set("SELECT MACHINE, WC_NAME FROM V_WORKCENTERS ORDER BY MACHINE")
+	F.Intrinsic.UI.Browser("Select Workcenter","conx",V.Local.squery,V.Local.sCol,V.Local.sWidth,400,400,V.Local.sRet)
+
+		F.Intrinsic.Control.If(V.Local.sret,<>,"***CANCEL***")
+			F.Intrinsic.string.Split(V.Local.sret,"*!*",V.Local.sret)
+			Gui.RouterFlex.gsRouter.TextMatrix(2,V.Args.key,V.Local.sret(0))
+			Gui.RouterFlex.gsRouter.TextMatrix(4,V.Args.key,V.Local.sret(1))
+
+			Gui.RouterFlex.lblSave.Caption("Router not saved.")
+		F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.EndIf
+Gui.RouterFlex.gsRouter.Commit
+
+'Gui.RouterFlex.gsRouter.ColWidth(3,200)
+V.Global.Dirty.Set(0)
+Gui.RouterFlex..Enabled(true)
+
+	F.Intrinsic.Control.UnBlockEvents
+
+program.sub.gsrouter_commandclick.end
+
+Program.Sub.Part.Start
+V.Local.sCol.Declare(String)
+V.Local.sWidth.Declare(String)
+V.Local.sFormat.Declare(String)
+V.Local.sret.Declare(String)
+V.Local.squery.Declare(String)
+
+		F.Intrinsic.String.Split("PART*!*DESCRIPTION","*!*",V.Local.sCol)
+		F.Intrinsic.String.Split("2000*!*4000","*!*",V.Local.swidth)
+
+		V.Local.squery.Set("SELECT PART, DESCRIPTION FROM V_INVENTORY_MSTR ORDER BY PART")
+		F.Intrinsic.UI.Browser("Select Part","conx",V.Local.squery,V.Local.sCol,V.Local.sWidth,400,400,V.Local.sRet)
+
+	'	F.Intrinsic.Control.If(V.Local.sret,<>,"***CANCEL***")
+	'		F.Intrinsic.string.Split(V.Local.sret,"*!*",V.Local.sret)
+	'		Gui.RouterFlex.gsRouter.TextMatrix(2,V.Args.key,V.Local.sret(0))
+	'		Gui.RouterFlex.gsRouter.TextMatrix(4,V.Args.key,V.Local.sret(1))
+	'	F.Intrinsic.Control.EndIf
+
+
+Program.Sub.Part.End
+
+program.sub.gsrouter_gotfocus.start
+Gui.RouterFlex.cmdBrowse.TabStop(false)
+Gui.RouterFlex.cmdCopy.TabStop(false)
+Gui.RouterFlex.cmdExport.TabStop(false)
+'Gui.RouterFlex.gsRouter.TabStop(false)
+
+program.sub.gsrouter_gotfocus.end
+
+program.sub.gsrouter_lostfocus.start
+
+
+program.sub.gsrouter_lostfocus.end
+
+program.sub.gsrouter_cellenter.start
+
+'F.Intrinsic.Control.If(V.Args.column,=,V.Screen.RouterFlex.Col)
+'	F.Intrinsic.Control.If(V.Args.key,=,V.Screen.RouterFlex.Row)
+'		Gui.RouterFlex.cmdBrowse.TabStop(true)
+'		Gui.RouterFlex.cmdCopy.TabStop(true)
+'		Gui.RouterFlex.cmdExport.TabStop(true)
+'		F.Intrinsic.Control.ExitSub
+'	F.Intrinsic.Control.EndIf
+'F.Intrinsic.Control.EndIf
+
+Gui.RouterFlex.cmdBrowse.TabStop(false)
+Gui.RouterFlex.cmdCopy.TabStop(false)
+Gui.RouterFlex.cmdExport.TabStop(false)
+
+program.sub.gsrouter_cellenter.end
+
+Program.Sub.Comments.Start
+${$0$}$ATG_3834_Router_Grid_Var1$}$LML$}$4/25/2016
+${$1$}$$}$$}$2$}$11150$}$RES010CR-POPULATE-HOOK$}$4/25/2016 9:58:01 AM$}$(Program: RE0010GI; Screen: RES010CR)
+
+${$1$}$$}$$}$1$}$11120$}$RES0101-SCRIPT-1-HOOK$}$4/25/2016 9:57:42 AM$}$(Program: RE0010GI; Screen: RES0101)
+
+${$1$}$$}$$}$0$}$11010$}$RES0101-POPULATE-HOOK$}$4/25/2016 9:57:23 AM$}$(Program: RE0010GI; Screen: RES0101)
+
+Program.Sub.Comments.End
+
